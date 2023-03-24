@@ -17,7 +17,7 @@ Some observations while doing the project:
 * Had OOM error while running MobileNet and ResNet50 amid the training phase (tried to use different EC2 instance type but it seems we are restricted to only use ml.t3.2xlarge), so unable to get more detailed performance metrics on these two.
 * Faster RCNN seems to perform better here, 
 
-with its training loss as:
+with its training loss as
 ========================
 
 I0321 19:31:25.993554 139798555100992 model_lib_v2.py:708] {'Loss/BoxClassifierLoss/classification_loss': 0.13113965,
@@ -28,7 +28,7 @@ I0321 19:31:25.993554 139798555100992 model_lib_v2.py:708] {'Loss/BoxClassifierL
  'Loss/total_loss': 0.6880522,
  'learning_rate': 0.06420001}
 
-and Eval Loss as:
+and Eval Loss as
 =================
 
 I0321 19:33:37.039008 139942282868544 model_lib_v2.py:1015] Eval metrics at step 2000
@@ -69,8 +69,15 @@ I0321 19:33:37.073292 139942282868544 model_lib_v2.py:1018] #011+ Loss/regulariz
 INFO:tensorflow:#011+ Loss/total_loss: 1.499909
 I0321 19:33:37.074490 139942282868544 model_lib_v2.py:1018] #011+ Loss/total_loss: 1.499909
 
+
 * Noticed that some of the loss metrics in training is larger than that in validation, which is not normal. My guess is that maybe the training set is not large enough?
 * Further improvement can be done through argumentation, as our training dataset seems not that big (?) We can introduce V/H flipping, scaling up/down, rotating, changing colormap, histogram, etc to generate lots of argumented images.
+
+Accumulated Evaluation Results
+==============================
+
+<img width="810" alt="Fasterrcnn evaluation result" src="https://user-images.githubusercontent.com/1509571/227424728-31809960-fd22-44ee-91fc-ce4d9f23f4f2.png">
+
 
 How Faster RCNN Works
 =====================
@@ -78,5 +85,5 @@ How Faster RCNN Works
 Faster RCNN architecture can be depicted as follow (courtesy of Neeraj Krishna):
 <img width="710" alt="Faster Rcnn Architecture" src="https://user-images.githubusercontent.com/1509571/227423012-cc418644-174c-4369-9869-e9a7a0aa75a5.png">
 
-The Faster RCNN is a 2-stage architecture, where the first stage is to propose a number of candidate object region (with different sizes and aspect ratios), and the second stage has two sibling fully connected layers - one for classifying whether the region box contains the object or not, and the other regress on the bonding box coordinates to get the best-fit bonding box for the object. It excel in the performance speed (suitable for real-time object detection applications), and the major gain of the speed comes from the idea of sharing the CNN engine which is used both for region proposal and region classification - so that wights does not need to incur heavy repetitive computations. 
+The Faster RCNN is a 2-stage architecture, and the first stage is to propose a number of candidate object regions where objects are most likely exist. The Faster RCNN processes the input image via a normal CNN to generate feature maps, and based on the feature maps it produces "anchor" boxes (k boxes with different sizes and aspect ratios), predict the score for each box w.r.t. the ground truth box, and then use NMS to pick the best box to propose. The second stage it uses two sibling FC layers - one for classifying whether the region box contains the object or not, and the other regress on the bonding box coordinates to get the best-fit bonding box for the object. This architecture excels in the performance speed (suitable for real-time object detection applications), and the major gain of the speed comes from the idea of sharing the CNN engine which is used both for region proposal and region classification - so that wights does not need to incur heavy repetitive computations. It is a widely used architecture for high-performance object detection tasks.
 
