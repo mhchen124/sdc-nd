@@ -71,3 +71,12 @@ I0321 19:33:37.074490 139942282868544 model_lib_v2.py:1018] #011+ Loss/total_los
 
 * Noticed that some of the loss metrics in training is larger than that in validation, which is not normal. My guess is that maybe the training set is not large enough?
 * Further improvement can be done through argumentation, as our training dataset seems not that big (?) We can introduce V/H flipping, scaling up/down, rotating, changing colormap, histogram, etc to generate lots of argumented images.
+
+How Faster RCNN Works
+=====================
+
+Faster RCNN architecture can be depicted as follow (courtesy of Neeraj Krishna):
+<img width="710" alt="Faster Rcnn Architecture" src="https://user-images.githubusercontent.com/1509571/227423012-cc418644-174c-4369-9869-e9a7a0aa75a5.png">
+
+The Faster RCNN is a 2-stage architecture, where the first stage is to propose a number of candidate object region (with different sizes and aspect ratios), and the second stage has two sibling fully connected layers - one for classifying whether the region box contains the object or not, and the other regress on the bonding box coordinates to get the best-fit bonding box for the object. It excel in the performance speed (suitable for real-time object detection applications), and the major gain of the speed comes from the idea of sharing the CNN engine which is used both for region proposal and region classification - so that wights does not need to incur heavy repetitive computations. 
+
